@@ -68,7 +68,9 @@ class _RecordsScreenState<T> extends State<RecordsScreen<T>> {
 
   Future<void> _refresh() async {
     final future = widget.loadRecords();
-    setState(() => _recordsFuture = future);
+    setState(() {
+      _recordsFuture = future;
+    });
     try {
       await future;
     } catch (_) {
