@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../presentation/screens/aprendices_screen.dart';
 import '../presentation/screens/asignaciones_screen.dart';

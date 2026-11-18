@@ -2,7 +2,7 @@ import 'package:adso4089_mobile/core/services/api_service.dart';
 import 'package:adso4089_mobile/presentation/widgets/module_card.dart';
 import 'package:adso4089_mobile/presentation/widgets/record_editor.dart';
 import 'package:adso4089_mobile/presentation/widgets/records_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
