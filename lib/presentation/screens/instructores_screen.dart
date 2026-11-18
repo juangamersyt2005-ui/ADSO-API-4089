@@ -6,6 +6,7 @@ import '../../core/services/persona_service.dart';
 import '../../data/models/instructor.dart';
 import '../../data/models/persona.dart';
 import '../widgets/records_screen.dart';
+import 'module_editor_configs.dart';
 import 'related_collections.dart';
 
 class InstructoresScreen extends StatefulWidget {
@@ -19,7 +20,9 @@ class _InstructoresScreenState extends State<InstructoresScreen> {
   final Map<int, String> _nombresPersonas = {};
 
   Future<ApiCollection<Instructor>> _cargarInstructores() async {
-    final personasFuture = loadOptionalCollection(PersonaService().obtenerPersonas());
+    final personasFuture = loadOptionalCollection(
+      PersonaService().obtenerPersonas(),
+    );
     final instructores = await InstructorService().obtenerInstructores();
     final personas = await personasFuture;
 
@@ -27,7 +30,10 @@ class _InstructoresScreenState extends State<InstructoresScreen> {
       ..clear()
       ..addEntries(
         (personas?.items ?? <Persona>[])
-            .where((persona) => persona.id != null && persona.nombreCompleto.isNotEmpty)
+            .where(
+              (persona) =>
+                  persona.id != null && persona.nombreCompleto.isNotEmpty,
+            )
             .map((persona) => MapEntry(persona.id!, persona.nombreCompleto)),
       );
 
@@ -47,11 +53,13 @@ class _InstructoresScreenState extends State<InstructoresScreen> {
           : 'Especialidad no disponible',
       detailsFor: (instructor) => [
         RecordDetailField('Especialidad', instructor.especialidad),
-        RecordDetailField(
-          'Persona',
-          _nombresPersonas[instructor.personaId],
-        ),
+        RecordDetailField('Persona', _nombresPersonas[instructor.personaId]),
       ],
+      editorConfig: cargarEditorInstructor,
+      createRecord: (values) => InstructorService().crearInstructor(values),
+      updateRecord: (instructor, values) => InstructorService()
+          .actualizarInstructor(instructor.uuid ?? '', values),
+      canEdit: (instructor) => instructor.uuid?.trim().isNotEmpty == true,
       deleteRecord: (instructor) =>
           InstructorService().eliminarInstructor(instructor.uuid ?? ''),
       canDelete: (instructor) => instructor.uuid?.trim().isNotEmpty == true,

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../core/services/api_service.dart';
 import 'empty_state.dart';
 import 'error_state.dart';
+import 'record_editor.dart';
 
 class RecordDetailField {
   const RecordDetailField(this.label, this.value);
@@ -21,6 +22,10 @@ class RecordsScreen<T> extends StatefulWidget {
     required this.titleFor,
     required this.subtitleFor,
     this.detailsFor,
+    this.editorConfig,
+    this.createRecord,
+    this.updateRecord,
+    this.canEdit,
     this.deleteRecord,
     this.canDelete,
     super.key,
@@ -32,6 +37,11 @@ class RecordsScreen<T> extends StatefulWidget {
   final String Function(T record) titleFor;
   final String Function(T record) subtitleFor;
   final List<RecordDetailField> Function(T record)? detailsFor;
+  final FutureOr<RecordEditorConfig> Function(T? record)? editorConfig;
+  final Future<void> Function(Map<String, Object?> values)? createRecord;
+  final Future<void> Function(T record, Map<String, Object?> values)?
+  updateRecord;
+  final bool Function(T record)? canEdit;
   final Future<void> Function(T record)? deleteRecord;
   final bool Function(T record)? canDelete;
 
@@ -42,6 +52,7 @@ class RecordsScreen<T> extends StatefulWidget {
 class _RecordsScreenState<T> extends State<RecordsScreen<T>> {
   late Future<ApiCollection<T>> _recordsFuture;
   final TextEditingController _searchController = TextEditingController();
+  bool _openingEditor = false;
 
   @override
   void initState() {
@@ -62,6 +73,63 @@ class _RecordsScreenState<T> extends State<RecordsScreen<T>> {
       await future;
     } catch (_) {
       // El FutureBuilder muestra el error y permite reintentar.
+    }
+  }
+
+  Future<void> _openEditor([T? record]) async {
+    final editorConfig = widget.editorConfig;
+    final createRecord = widget.createRecord;
+    final updateRecord = widget.updateRecord;
+    if (editorConfig == null ||
+        (record == null ? createRecord == null : updateRecord == null) ||
+        _openingEditor) {
+      return;
+    }
+
+    setState(() => _openingEditor = true);
+    try {
+      final config = await editorConfig(record);
+      if (!mounted) return;
+      setState(() => _openingEditor = false);
+
+      final saved = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (_) => RecordEditorForm(
+          title: record == null
+              ? 'Agregar ${widget.title.toLowerCase()}'
+              : 'Editar ${widget.title.toLowerCase()}',
+          config: config,
+          isEditing: record != null,
+          onSave: (values) async {
+            if (record == null) {
+              await createRecord!(values);
+            } else {
+              await updateRecord!(record, values);
+            }
+          },
+        ),
+      );
+
+      if (saved != true || !mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            record == null
+                ? '${widget.title}: registro creado.'
+                : '${widget.title}: registro actualizado.',
+          ),
+        ),
+      );
+      await _refresh();
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se pudo abrir el formulario: $error')),
+      );
+    } finally {
+      if (mounted && _openingEditor) setState(() => _openingEditor = false);
     }
   }
 
@@ -132,9 +200,8 @@ class _RecordsScreenState<T> extends State<RecordsScreen<T>> {
               const SizedBox(height: 4),
               Text(
                 widget.subtitleFor(record),
-                style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
-                      color: Colors.black54,
-                    ),
+                style: Theme.of(sheetContext).textTheme.bodyMedium
+                    ?.copyWith(color: Colors.black54),
               ),
               const SizedBox(height: 12),
               for (final detail in details)
@@ -157,6 +224,18 @@ class _RecordsScreenState<T> extends State<RecordsScreen<T>> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
+          if (widget.editorConfig != null)
+            IconButton(
+              tooltip: 'Agregar registro',
+              onPressed: _openingEditor ? null : () => unawaited(_openEditor()),
+              icon: _openingEditor
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.add),
+            ),
           IconButton(
             tooltip: 'Actualizar',
             onPressed: () => unawaited(_refresh()),
@@ -226,13 +305,15 @@ class _RecordsScreenState<T> extends State<RecordsScreen<T>> {
                 }
 
                 final query = _searchController.text.trim().toLowerCase();
-                final filtered = records.where((record) {
-                  if (query.isEmpty) return true;
-                  final text =
-                      '${widget.titleFor(record)} ${widget.subtitleFor(record)}'
-                          .toLowerCase();
-                  return text.contains(query);
-                }).toList(growable: false);
+                final filtered = records
+                    .where((record) {
+                      if (query.isEmpty) return true;
+                      final text =
+                          '${widget.titleFor(record)} ${widget.subtitleFor(record)}'
+                              .toLowerCase();
+                      return text.contains(query);
+                    })
+                    .toList(growable: false);
 
                 if (filtered.isEmpty) {
                   return RefreshIndicator(
@@ -262,7 +343,31 @@ class _RecordsScreenState<T> extends State<RecordsScreen<T>> {
                     separatorBuilder: (_, _) => const SizedBox(height: 4),
                     itemBuilder: (context, index) {
                       final record = filtered[index];
-                      final deleteEnabled = widget.canDelete?.call(record) ?? true;
+                      final deleteEnabled =
+                          widget.canDelete?.call(record) ?? true;
+                      final editEnabled = widget.canEdit?.call(record) ?? true;
+                      final actions = <Widget>[
+                        if (widget.updateRecord != null)
+                          IconButton(
+                            tooltip: editEnabled
+                                ? 'Editar registro'
+                                : 'No se puede editar: falta UUID',
+                            onPressed: editEnabled
+                                ? () => unawaited(_openEditor(record))
+                                : null,
+                            icon: const Icon(Icons.edit_outlined),
+                          ),
+                        if (widget.deleteRecord != null)
+                          IconButton(
+                            tooltip: deleteEnabled
+                                ? 'Eliminar registro'
+                                : 'No se puede eliminar: falta UUID',
+                            onPressed: deleteEnabled
+                                ? () => unawaited(_confirmDelete(record))
+                                : null,
+                            icon: const Icon(Icons.delete_outline),
+                          ),
+                      ];
                       return Card(
                         child: ListTile(
                           leading: CircleAvatar(
@@ -276,16 +381,11 @@ class _RecordsScreenState<T> extends State<RecordsScreen<T>> {
                               : () => unawaited(_showDetails(record)),
                           title: Text(widget.titleFor(record)),
                           subtitle: Text(widget.subtitleFor(record)),
-                          trailing: widget.deleteRecord == null
+                          trailing: actions.isEmpty
                               ? null
-                              : IconButton(
-                                  tooltip: deleteEnabled
-                                      ? 'Eliminar registro'
-                                      : 'No se puede eliminar: falta UUID',
-                                  onPressed: deleteEnabled
-                                      ? () => unawaited(_confirmDelete(record))
-                                      : null,
-                                  icon: const Icon(Icons.delete_outline),
+                              : Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: actions,
                                 ),
                         ),
                       );

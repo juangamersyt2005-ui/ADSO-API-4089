@@ -15,6 +15,24 @@ class AsignacionService {
     );
   }
 
+  Future<void> crearAsignacion(Map<String, Object?> datos) async {
+    await _apiService.postJson(ApiConstants.asignaciones, datos);
+  }
+
+  Future<void> actualizarAsignacion(
+    String uuid,
+    Map<String, Object?> datos,
+  ) async {
+    final identifier = uuid.trim();
+    if (identifier.isEmpty) {
+      throw const ApiException('La asignación no tiene un UUID válido.');
+    }
+    await _apiService.putJson(
+      '${ApiConstants.asignaciones}${Uri.encodeComponent(identifier)}',
+      datos,
+    );
+  }
+
   Future<void> eliminarAsignacion(String uuid) async {
     final identifier = uuid.trim();
     if (identifier.isEmpty) {

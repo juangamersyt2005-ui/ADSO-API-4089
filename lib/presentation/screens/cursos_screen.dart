@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/services/curso_service.dart';
 import '../../data/models/curso.dart';
 import '../widgets/records_screen.dart';
+import 'module_editor_configs.dart';
 
 class CursosScreen extends StatelessWidget {
   const CursosScreen({super.key});
@@ -21,6 +22,11 @@ class CursosScreen extends StatelessWidget {
         RecordDetailField('Duración', curso.duracion?.toString()),
         RecordDetailField('Costo', curso.costo),
       ],
+      editorConfig: cargarEditorCurso,
+      createRecord: (values) => CursoService().crearCurso(values),
+      updateRecord: (curso, values) =>
+          CursoService().actualizarCurso(curso.uuid ?? '', values),
+      canEdit: (curso) => curso.uuid?.trim().isNotEmpty == true,
       deleteRecord: (curso) => CursoService().eliminarCurso(curso.uuid ?? ''),
       canDelete: (curso) => curso.uuid?.trim().isNotEmpty == true,
     );

@@ -9,9 +9,21 @@ class CursoService {
   final ApiService _apiService;
 
   Future<ApiCollection<Curso>> obtenerCursos() {
-    return _apiService.getCollection(
-      ApiConstants.cursos,
-      Curso.fromJson,
+    return _apiService.getCollection(ApiConstants.cursos, Curso.fromJson);
+  }
+
+  Future<void> crearCurso(Map<String, Object?> datos) async {
+    await _apiService.postJson(ApiConstants.cursos, datos);
+  }
+
+  Future<void> actualizarCurso(String uuid, Map<String, Object?> datos) async {
+    final identifier = uuid.trim();
+    if (identifier.isEmpty) {
+      throw const ApiException('El curso no tiene un UUID válido.');
+    }
+    await _apiService.putJson(
+      '${ApiConstants.cursos}${Uri.encodeComponent(identifier)}',
+      datos,
     );
   }
 

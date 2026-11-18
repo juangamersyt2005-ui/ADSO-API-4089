@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/services/evaluacion_service.dart';
 import '../../data/models/evaluacion.dart';
 import '../widgets/records_screen.dart';
+import 'module_editor_configs.dart';
 
 class EvaluacionesScreen extends StatelessWidget {
   const EvaluacionesScreen({super.key});
@@ -20,6 +21,11 @@ class EvaluacionesScreen extends StatelessWidget {
         RecordDetailField('Fecha', evaluacion.fecha),
         RecordDetailField('Porcentaje', evaluacion.porcentaje),
       ],
+      editorConfig: cargarEditorEvaluacion,
+      createRecord: (values) => EvaluacionService().crearEvaluacion(values),
+      updateRecord: (evaluacion, values) => EvaluacionService()
+          .actualizarEvaluacion(evaluacion.uuid ?? '', values),
+      canEdit: (evaluacion) => evaluacion.uuid?.trim().isNotEmpty == true,
       deleteRecord: (evaluacion) =>
           EvaluacionService().eliminarEvaluacion(evaluacion.uuid ?? ''),
       canDelete: (evaluacion) => evaluacion.uuid?.trim().isNotEmpty == true,

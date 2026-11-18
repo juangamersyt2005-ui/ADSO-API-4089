@@ -77,12 +77,15 @@ El dispositivo debe tener acceso a Internet y la API debe estar disponible. La p
 2. Pulsa una tarjeta para abrir el listado del módulo.
 3. Usa el campo de búsqueda para filtrar los registros cargados. La búsqueda se aplica al contenido disponible en la lista.
 4. Pulsa un registro para consultar sus detalles cuando estén disponibles.
-5. Usa el botón de actualizar o desliza la lista hacia abajo para volver a consultar la API.
-6. En los módulos que permiten eliminación, pulsa el icono de papelera y confirma en el diálogo para enviar DELETE.
+5. Pulsa **+** para abrir el formulario de creación. Completa los campos obligatorios y pulsa **Guardar** para enviar POST.
+6. Para cambiar un registro, pulsa el icono de lápiz. El formulario carga sus datos actuales; al guardar envía PUT usando el UUID del registro.
+7. En los campos relacionados, selecciona personas, cursos, instructores, evaluaciones o matrículas de las listas cargadas desde la API. Si no hay opciones, crea primero el registro relacionado en su módulo y vuelve a abrir el formulario.
+8. Para eliminar, pulsa el icono de papelera y confirma en el diálogo. La confirmación envía DELETE.
+9. Usa el botón de actualizar o desliza la lista hacia abajo para volver a consultar la API después de una operación.
 
 Si un endpoint falla, la interfaz informa el error y permite reintentar. No muestra cantidades ficticias. Para respuestas que entregan un arreglo directo, el dashboard cuenta los registros recibidos; ese valor no implica que la API haya aplicado paginación.
 
-La aplicación no incluye formularios de creación o edición: no se encontró un contrato confirmado para los cuerpos POST y PUT de cada módulo.
+Los formularios usan los contratos de `swagger.json` y las validaciones de los controladores del backend local. Validan campos obligatorios y rangos numéricos; los mensajes HTTP muestran el detalle del servidor cuando está disponible. Aún no se han enviado escrituras reales contra Render.
 
 ## 6. Pruebas y compilación
 

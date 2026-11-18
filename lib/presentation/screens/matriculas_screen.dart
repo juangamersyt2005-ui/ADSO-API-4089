@@ -8,6 +8,7 @@ import '../../data/models/curso.dart';
 import '../../data/models/matricula.dart';
 import '../../data/models/persona.dart';
 import '../widgets/records_screen.dart';
+import 'module_editor_configs.dart';
 import 'related_collections.dart';
 
 class MatriculasScreen extends StatefulWidget {
@@ -23,7 +24,9 @@ class _MatriculasScreenState extends State<MatriculasScreen> {
 
   Future<ApiCollection<Matricula>> _cargarMatriculas() async {
     final cursosFuture = loadOptionalCollection(CursoService().obtenerCursos());
-    final personasFuture = loadOptionalCollection(PersonaService().obtenerPersonas());
+    final personasFuture = loadOptionalCollection(
+      PersonaService().obtenerPersonas(),
+    );
     final matriculas = await MatriculaService().obtenerMatriculas();
     final cursos = await cursosFuture;
     final personas = await personasFuture;
@@ -39,7 +42,10 @@ class _MatriculasScreenState extends State<MatriculasScreen> {
       ..clear()
       ..addEntries(
         (personas?.items ?? <Persona>[])
-            .where((persona) => persona.id != null && persona.nombreCompleto.isNotEmpty)
+            .where(
+              (persona) =>
+                  persona.id != null && persona.nombreCompleto.isNotEmpty,
+            )
             .map((persona) => MapEntry(persona.id!, persona.nombreCompleto)),
       );
 
@@ -71,6 +77,11 @@ class _MatriculasScreenState extends State<MatriculasScreen> {
         RecordDetailField('Estado', matricula.estado),
         RecordDetailField('Fecha', matricula.fecha),
       ],
+      editorConfig: cargarEditorMatricula,
+      createRecord: (values) => MatriculaService().crearMatricula(values),
+      updateRecord: (matricula, values) =>
+          MatriculaService().actualizarMatricula(matricula.uuid ?? '', values),
+      canEdit: (matricula) => matricula.uuid?.trim().isNotEmpty == true,
       deleteRecord: (matricula) =>
           MatriculaService().eliminarMatricula(matricula.uuid ?? ''),
       canDelete: (matricula) => matricula.uuid?.trim().isNotEmpty == true,

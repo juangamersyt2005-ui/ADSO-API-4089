@@ -15,6 +15,24 @@ class InstructorService {
     );
   }
 
+  Future<void> crearInstructor(Map<String, Object?> datos) async {
+    await _apiService.postJson(ApiConstants.instructores, datos);
+  }
+
+  Future<void> actualizarInstructor(
+    String uuid,
+    Map<String, Object?> datos,
+  ) async {
+    final identifier = uuid.trim();
+    if (identifier.isEmpty) {
+      throw const ApiException('El instructor no tiene un UUID válido.');
+    }
+    await _apiService.putJson(
+      '${ApiConstants.instructores}${Uri.encodeComponent(identifier)}',
+      datos,
+    );
+  }
+
   Future<void> eliminarInstructor(String uuid) async {
     final identifier = uuid.trim();
     if (identifier.isEmpty) {

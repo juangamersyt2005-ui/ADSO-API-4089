@@ -10,6 +10,7 @@ import '../../data/models/curso.dart';
 import '../../data/models/instructor.dart';
 import '../../data/models/persona.dart';
 import '../widgets/records_screen.dart';
+import 'module_editor_configs.dart';
 import 'related_collections.dart';
 
 class AsignacionesScreen extends StatefulWidget {
@@ -25,9 +26,12 @@ class _AsignacionesScreenState extends State<AsignacionesScreen> {
 
   Future<ApiCollection<Asignacion>> _cargarAsignaciones() async {
     final cursosFuture = loadOptionalCollection(CursoService().obtenerCursos());
-    final instructoresFuture =
-        loadOptionalCollection(InstructorService().obtenerInstructores());
-    final personasFuture = loadOptionalCollection(PersonaService().obtenerPersonas());
+    final instructoresFuture = loadOptionalCollection(
+      InstructorService().obtenerInstructores(),
+    );
+    final personasFuture = loadOptionalCollection(
+      PersonaService().obtenerPersonas(),
+    );
     final asignaciones = await AsignacionService().obtenerAsignaciones();
     final cursos = await cursosFuture;
     final instructores = await instructoresFuture;
@@ -49,15 +53,17 @@ class _AsignacionesScreenState extends State<AsignacionesScreen> {
     _nombresInstructores
       ..clear()
       ..addEntries(
-        (instructores?.items ?? <Instructor>[]).where((instructor) {
-          return instructor.id != null &&
-              nombresPersonas[instructor.personaId] != null;
-        }).map(
-          (instructor) => MapEntry(
-            instructor.id!,
-            nombresPersonas[instructor.personaId]!,
-          ),
-        ),
+        (instructores?.items ?? <Instructor>[])
+            .where((instructor) {
+              return instructor.id != null &&
+                  nombresPersonas[instructor.personaId] != null;
+            })
+            .map(
+              (instructor) => MapEntry(
+                instructor.id!,
+                nombresPersonas[instructor.personaId]!,
+              ),
+            ),
       );
 
     return asignaciones;
@@ -93,8 +99,13 @@ class _AsignacionesScreenState extends State<AsignacionesScreen> {
         RecordDetailField('Fecha', asignacion.fecha),
         RecordDetailField('Fecha de asignación', asignacion.fechaAsignacion),
       ],
-      deleteRecord: (asignacion) => AsignacionService()
-          .eliminarAsignacion(asignacion.uuid ?? ''),
+      editorConfig: cargarEditorAsignacion,
+      createRecord: (values) => AsignacionService().crearAsignacion(values),
+      updateRecord: (asignacion, values) => AsignacionService()
+          .actualizarAsignacion(asignacion.uuid ?? '', values),
+      canEdit: (asignacion) => asignacion.uuid?.trim().isNotEmpty == true,
+      deleteRecord: (asignacion) =>
+          AsignacionService().eliminarAsignacion(asignacion.uuid ?? ''),
       canDelete: (asignacion) => asignacion.uuid?.trim().isNotEmpty == true,
     );
   }

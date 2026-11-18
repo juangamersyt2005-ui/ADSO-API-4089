@@ -17,10 +17,7 @@ class ApiException implements Exception {
 }
 
 class ApiCollection<T> {
-  const ApiCollection({
-    required this.items,
-    required this.count,
-  });
+  const ApiCollection({required this.items, required this.count});
 
   final List<T> items;
 
@@ -29,37 +26,45 @@ class ApiCollection<T> {
 }
 
 class ApiService {
-  ApiService({
-    http.Client? client,
-    this.timeout = const Duration(seconds: 20),
-  }) : _client = client ?? http.Client();
+  ApiService({http.Client? client, this.timeout = const Duration(seconds: 20)})
+    : _client = client ?? http.Client();
 
   static final ApiService instance = ApiService();
 
   final http.Client _client;
   final Duration timeout;
 
+  static const _jsonHeaders = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  };
+
   Future<dynamic> getJson(String endpoint) {
     return _request(
       endpoint,
-      (url) => _client.get(
-        url,
-        headers: const {
-          'Accept': 'application/json',
-        },
-      ),
+      (url) => _client.get(url, headers: const {'Accept': 'application/json'}),
+    );
+  }
+
+  Future<dynamic> postJson(String endpoint, Map<String, Object?> body) {
+    return _request(
+      endpoint,
+      (url) => _client.post(url, headers: _jsonHeaders, body: jsonEncode(body)),
+    );
+  }
+
+  Future<dynamic> putJson(String endpoint, Map<String, Object?> body) {
+    return _request(
+      endpoint,
+      (url) => _client.put(url, headers: _jsonHeaders, body: jsonEncode(body)),
     );
   }
 
   Future<void> delete(String endpoint) async {
     await _request(
       endpoint,
-      (url) => _client.delete(
-        url,
-        headers: const {
-          'Accept': 'application/json',
-        },
-      ),
+      (url) =>
+          _client.delete(url, headers: const {'Accept': 'application/json'}),
       decodeJson: false,
     );
   }
@@ -74,8 +79,10 @@ class ApiService {
       final response = await send(url).timeout(timeout);
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
+        final detail = _errorDetail(response);
         throw ApiException(
-          'Error HTTP ${response.statusCode} al realizar la solicitud a $endpoint.',
+          'Error HTTP ${response.statusCode} al realizar la solicitud a '
+          '$endpoint${detail == null ? '.' : ': $detail'}',
         );
       }
 
@@ -94,10 +101,33 @@ class ApiService {
     } on FormatException catch (error) {
       throw ApiException('La URL o la respuesta JSON no es válida: $error');
     } on http.ClientException catch (error) {
-      throw ApiException('Error de red al comunicarse con la API: ${error.message}');
+      throw ApiException(
+        'Error de red al comunicarse con la API: ${error.message}',
+      );
     } catch (error) {
       throw ApiException('No se pudo completar la solicitud a la API: $error');
     }
+  }
+
+  String? _errorDetail(http.Response response) {
+    if (response.bodyBytes.isEmpty) return null;
+
+    final body = utf8.decode(response.bodyBytes, allowMalformed: true).trim();
+    if (body.isEmpty) return null;
+
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map) {
+        for (final key in const ['error', 'mensaje', 'message', 'detail']) {
+          final value = decoded[key]?.toString().trim();
+          if (value != null && value.isNotEmpty) return value;
+        }
+      }
+    } on FormatException {
+      // Algunas respuestas de error son texto plano.
+    }
+
+    return body.length <= 240 ? body : '${body.substring(0, 237)}...';
   }
 
   Future<ApiCollection<T>> getCollection<T>(

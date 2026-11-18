@@ -9,9 +9,24 @@ class PersonaService {
   final ApiService _apiService;
 
   Future<ApiCollection<Persona>> obtenerPersonas() {
-    return _apiService.getCollection(
-      ApiConstants.personas,
-      Persona.fromJson,
+    return _apiService.getCollection(ApiConstants.personas, Persona.fromJson);
+  }
+
+  Future<void> crearPersona(Map<String, Object?> datos) async {
+    await _apiService.postJson(ApiConstants.personas, datos);
+  }
+
+  Future<void> actualizarPersona(
+    String uuid,
+    Map<String, Object?> datos,
+  ) async {
+    final identifier = uuid.trim();
+    if (identifier.isEmpty) {
+      throw const ApiException('La persona no tiene un UUID válido.');
+    }
+    await _apiService.putJson(
+      '${ApiConstants.personas}${Uri.encodeComponent(identifier)}',
+      datos,
     );
   }
 

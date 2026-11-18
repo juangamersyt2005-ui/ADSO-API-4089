@@ -1,4 +1,3 @@
-
 import '../../data/models/aprendiz.dart';
 import '../constants/api_constants.dart';
 import 'api_service.dart';
@@ -13,6 +12,24 @@ class AprendizService {
     return _apiService.getCollection(
       ApiConstants.aprendices,
       Aprendiz.fromJson,
+    );
+  }
+
+  Future<void> crearAprendiz(Map<String, Object?> datos) async {
+    await _apiService.postJson(ApiConstants.aprendices, datos);
+  }
+
+  Future<void> actualizarAprendiz(
+    String uuid,
+    Map<String, Object?> datos,
+  ) async {
+    final identifier = uuid.trim();
+    if (identifier.isEmpty) {
+      throw const ApiException('El aprendiz no tiene un UUID válido.');
+    }
+    await _apiService.putJson(
+      '${ApiConstants.aprendices}${Uri.encodeComponent(identifier)}',
+      datos,
     );
   }
 

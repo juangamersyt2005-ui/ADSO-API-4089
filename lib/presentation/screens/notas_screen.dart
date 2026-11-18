@@ -12,6 +12,7 @@ import '../../data/models/matricula.dart';
 import '../../data/models/nota.dart';
 import '../../data/models/persona.dart';
 import '../widgets/records_screen.dart';
+import 'module_editor_configs.dart';
 import 'related_collections.dart';
 
 class NotasScreen extends StatefulWidget {
@@ -26,10 +27,15 @@ class _NotasScreenState extends State<NotasScreen> {
   final Map<int, String> _descripcionesMatriculas = {};
 
   Future<ApiCollection<Nota>> _cargarNotas() async {
-    final evaluacionesFuture =
-        loadOptionalCollection(EvaluacionService().obtenerEvaluaciones());
-    final matriculasFuture = loadOptionalCollection(MatriculaService().obtenerMatriculas());
-    final personasFuture = loadOptionalCollection(PersonaService().obtenerPersonas());
+    final evaluacionesFuture = loadOptionalCollection(
+      EvaluacionService().obtenerEvaluaciones(),
+    );
+    final matriculasFuture = loadOptionalCollection(
+      MatriculaService().obtenerMatriculas(),
+    );
+    final personasFuture = loadOptionalCollection(
+      PersonaService().obtenerPersonas(),
+    );
     final cursosFuture = loadOptionalCollection(CursoService().obtenerCursos());
     final notas = await NotaService().obtenerNotas();
     final evaluaciones = await evaluacionesFuture;
@@ -41,8 +47,10 @@ class _NotasScreenState extends State<NotasScreen> {
       ..clear()
       ..addEntries(
         (evaluaciones?.items ?? <Evaluacion>[])
-            .where((evaluacion) =>
-                evaluacion.id != null && evaluacion.titulo.isNotEmpty)
+            .where(
+              (evaluacion) =>
+                  evaluacion.id != null && evaluacion.titulo.isNotEmpty,
+            )
             .map((evaluacion) => MapEntry(evaluacion.id!, evaluacion.titulo)),
       );
 
@@ -62,15 +70,15 @@ class _NotasScreenState extends State<NotasScreen> {
         (matriculas?.items ?? <Matricula>[])
             .where((matricula) => matricula.id != null)
             .map((matricula) {
-          final partes = [
-            nombresPersonas[matricula.personaId],
-            nombresCursos[matricula.cursoId],
-          ].whereType<String>().toList();
-          return MapEntry(
-            matricula.id!,
-            partes.isEmpty ? 'Matrícula académica' : partes.join(' · '),
-          );
-        }),
+              final partes = [
+                nombresPersonas[matricula.personaId],
+                nombresCursos[matricula.cursoId],
+              ].whereType<String>().toList();
+              return MapEntry(
+                matricula.id!,
+                partes.isEmpty ? 'Matrícula académica' : partes.join(' · '),
+              );
+            }),
       );
 
     return notas;
@@ -96,13 +104,21 @@ class _NotasScreenState extends State<NotasScreen> {
       titleFor: _titulo,
       subtitleFor: _subtitulo,
       detailsFor: (nota) => [
-        RecordDetailField('Evaluación', _nombresEvaluaciones[nota.evaluacionId]),
+        RecordDetailField(
+          'Evaluación',
+          _nombresEvaluaciones[nota.evaluacionId],
+        ),
         RecordDetailField('Calificación', nota.valor),
         RecordDetailField(
           'Matrícula relacionada',
           _descripcionesMatriculas[nota.matriculaId],
         ),
       ],
+      editorConfig: cargarEditorNota,
+      createRecord: (values) => NotaService().crearNota(values),
+      updateRecord: (nota, values) =>
+          NotaService().actualizarNota(nota.uuid ?? '', values),
+      canEdit: (nota) => nota.uuid?.trim().isNotEmpty == true,
       deleteRecord: (nota) => NotaService().eliminarNota(nota.uuid ?? ''),
       canDelete: (nota) => nota.uuid?.trim().isNotEmpty == true,
     );

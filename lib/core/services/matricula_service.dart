@@ -15,6 +15,24 @@ class MatriculaService {
     );
   }
 
+  Future<void> crearMatricula(Map<String, Object?> datos) async {
+    await _apiService.postJson(ApiConstants.matriculas, datos);
+  }
+
+  Future<void> actualizarMatricula(
+    String uuid,
+    Map<String, Object?> datos,
+  ) async {
+    final identifier = uuid.trim();
+    if (identifier.isEmpty) {
+      throw const ApiException('La matrícula no tiene un UUID válido.');
+    }
+    await _apiService.putJson(
+      '${ApiConstants.matriculas}${Uri.encodeComponent(identifier)}',
+      datos,
+    );
+  }
+
   Future<void> eliminarMatricula(String uuid) async {
     final identifier = uuid.trim();
     if (identifier.isEmpty) {
