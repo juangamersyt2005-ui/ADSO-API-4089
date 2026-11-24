@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {"colors": {"on-tertiary-fixed": "#002113", "error": "#ffb4ab", "tertiary-container": "#00885d", "error-container": "#93000a", "surface-variant": "#2d3449", "surface-bright": "#31394d", "background": "#0b1326", "tertiary-fixed-dim": "#4edea3", "secondary-fixed-dim": "#adc6ff", "surface-container-high": "#222a3d", "on-primary-fixed-variant": "#2f2ebe", "inverse-on-surface": "#283044", "surface-dim": "#0b1326", "secondary": "#adc6ff", "on-error": "#690005", "tertiary": "#4edea3", "surface-tint": "#c0c1ff", "on-secondary-fixed-variant": "#004395", "on-primary-fixed": "#07006c", "primary-fixed": "#e1e0ff", "surface-container-highest": "#2d3449", "on-secondary-container": "#e6ecff", "on-primary-container": "#0d0096", "outline": "#908fa0", "on-surface": "#dae2fd", "on-surface-variant": "#c7c4d7", "on-tertiary-fixed-variant": "#005236", "secondary-fixed": "#d8e2ff", "on-tertiary-container": "#000703", "surface-container": "#171f33", "on-background": "#dae2fd", "on-secondary": "#002e6a", "on-primary": "#1000a9", "primary-fixed-dim": "#c0c1ff", "outline-variant": "#464554", "surface-container-lowest": "#060e20", "on-error-container": "#ffdad6", "surface": "#0b1326", "inverse-primary": "#494bd6", "inverse-surface": "#dae2fd", "on-tertiary": "#003824", "primary": "#c0c1ff", "primary-container": "#8083ff", "on-secondary-fixed": "#001a42", "secondary-container": "#0566d9", "tertiary-fixed": "#6ffbbe", "surface-container-low": "#131b2e"}, "borderRadius": {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"}, "spacing": {"space-sm": "8px", "margin": "16px", "space-md": "16px", "space-xl": "32px", "gutter": "16px", "space-xs": "4px", "space-lg": "24px"}, "fontFamily": {"display-lg": ["Roboto Flex"], "headline-md": ["Roboto Flex"], "body-md": ["Inter"], "title-lg": ["Inter"], "label-lg": ["Inter"], "body-lg": ["Inter"], "label-md": ["Inter"], "headline-lg": ["Roboto Flex"], "title-md": ["Inter"], "headline-lg-mobile": ["Roboto Flex"]}, "fontSize": {"display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700"}], "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}], "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}], "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}], "label-lg": ["14px", {"lineHeight": "20px", "fontWeight": "500"}], "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}], "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}], "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}], "title-md": ["16px", {"lineHeight": "24px", "fontWeight": "500"}], "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}]}}}};</script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Roboto+Flex:wght@600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-surface text-on-surface font-body-md flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/80 backdrop-blur-xl pt-safe"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><span class="font-title-lg text-on-surface tracking-tight">ADSO4089</span><span class="px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary-container font-label-md flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-tertiary">cloud_done</span>En línea</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full px-gutter pt-16 pb-24 bg-surface flex-grow"><div class="flex flex-col w-full gap-space-lg pb-12">
+<!-- Search and Header Section -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<h1 class="font-headline-lg-mobile text-on-surface">Aprendices</h1>
+<p class="font-body-md text-on-surface-variant">Gestión de talento y fichas activas</p>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-3 py-1 rounded-full bg-surface-container-high text-primary font-label-md" id="total-count">Total: 24</span>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="relative flex items-center w-full">
+<span class="absolute left-4 material-symbols-outlined text-outline">search</span>
+<input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary font-body-md transition-all" id="search-input" placeholder="Buscar por nombre, documento o ficha..." type="text"/>
+<button class="absolute right-3 p-2 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+</div>
+<!-- Filter Chips & Ficha Selector -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 no-scrollbar" id="status-filters">
+<button class="filter-btn px-4 py-2 rounded-full bg-primary text-on-primary font-label-md whitespace-nowrap transition-all shadow-sm" data-status="all">Todos (24)</button>
+<button class="filter-btn px-4 py-2 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-md whitespace-nowrap transition-all" data-status="activo">Activos (18)</button>
+<button class="filter-btn px-4 py-2 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-md whitespace-nowrap transition-all" data-status="pausa">En Pausa (4)</button>
+<button class="filter-btn px-4 py-2 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-md whitespace-nowrap transition-all" data-status="egresado">Egresados (2)</button>
+</div>
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 no-scrollbar" id="ficha-filters">
+<button class="ficha-btn px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-label-md whitespace-nowrap transition-all border border-primary/40 text-xs" data-ficha="all">Todas las fichas</button>
+<button class="ficha-btn px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant font-label-md whitespace-nowrap transition-all text-xs" data-ficha="2873408">Ficha 2873408</button>
+<button class="ficha-btn px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant font-label-md whitespace-nowrap transition-all text-xs" data-ficha="2873409">Ficha 2873409</button>
+</div>
+</div>
+</div>
+<!-- Apprentices List -->
+<div class="flex flex-col gap-space-md" id="apprentices-list">
+<!-- Apprentice Card 1 -->
+<div class="apprentice-card flex flex-col p-space-md rounded-xl bg-surface-container transition-all hover:bg-surface-container-high shadow-sm gap-space-md" data-doc="1.098.456.789" data-ficha="2873408" data-name="Valentina Gómez Restrepo" data-status="activo">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="relative w-12 h-12 rounded-full bg-surface-container-highest overflow-hidden flex-shrink-0 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Portrait of a young Latino female vocational software development student smiling warmly, wearing a casual denim jacket, soft indoor studio lighting, professional corporate style portrait with deep blue and indigo undertones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBu4BE44f5_CNuPaZpVOSmyZzOa3DdVjyQ5qmq495wvDocW7Yq5I8M5cBWLggJpMoVyqAxlhrwDV7-325AkYt7Kc0y6AswhkHuQwWQchifjjfeQFjlfQosrl8l9TrtT5x9P67c0kpXkgPAxYk3iLkiepo1zm4_vlUjYlxJK9vVq-vdy5IRQi6WnPTNTi_XhrhvuYF4nQNTnL59DTZHC-m4lJGtubYgSXvAI3eLrrLE"/>
+</div>
+<div class="min-w-0">
+<h3 class="font-title-md text-on-surface truncate">Valentina Gómez Restrepo</h3>
+<p class="font-label-md text-outline">C.C. 1.098.456.789</p>
+</div>
+</div>
+<span class="status-badge px-2.5 py-1 rounded-full bg-tertiary-container text-on-tertiary-container font-label-md flex items-center gap-1 flex-shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>Activo
+        </span>
+</div>
+<div class="flex flex-col gap-space-xs bg-surface/40 p-3 rounded-lg">
+<div class="flex items-center justify-between text-body-md">
+<span class="text-on-surface-variant flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">school</span>Ficha</span>
+<span class="font-medium text-on-surface">Ficha 2873408</span>
+</div>
+<div class="flex items-center justify-between text-body-md">
+<span class="text-on-surface-variant flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">mail</span></span>
+<span class="font-medium text-on-surface truncate max-w-[180px]">vgomez789@sena.edu.co</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-surface-variant/40 mt-1">
+<div class="flex items-center gap-1">
+<span class="text-secondary font-label-md">Promedio: 4.7</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="star-btn w-9 h-9 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-yellow-400 flex items-center justify-center transition-colors" title="Destacar">
+<span class="material-symbols-outlined text-[18px]">star</span>
+</button>
+<button class="toggle-status-btn px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-label-md hover:bg-surface-bright transition-colors flex items-center gap-1" title="Cambiar Estado">
+<span class="material-symbols-outlined text-[16px]">swap_horiz</span> Estado
+</button>
+<button class="w-9 h-9 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="delete-btn w-9 h-9 rounded-lg bg-error-container/40 text-on-error-container flex items-center justify-center hover:opacity-90 transition-opacity" title="Eliminar">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Apprentice Card 2 -->
+<div class="apprentice-card flex flex-col p-space-md rounded-xl bg-surface-container transition-all hover:bg-surface-container-high shadow-sm gap-space-md" data-doc="1.052.321.456" data-ficha="2873408" data-name="Valentina Gómez Restrepo" data-status="pausa">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="relative w-12 h-12 rounded-full bg-surface-container-highest overflow-hidden flex-shrink-0 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Portrait of a young Latino male software analysis student with short dark hair, wearing a clean black t-shirt, confident expression, studio background with soft purple and indigo ambient illumination." src="https://lh3.googleusercontent.com/aida-public/AB6AXuClmRhIY5HmDSdTDwDjTTB5Xvn3I0tibN09qHQ31O9T3Rp-wI8GwP5GA8YaTsPE5xWbTijyOEmY2tkL7wyAsB8DtzsIRotzVyqtz7GzyS_CX5m6gW9w2iWtKF8BkvbSufNyMbA-Xt5wFF0dZwVJ0oEHwGoWKTFmfbpdPSpraWI0XC1YPB9FTJJZ0KlFOv_eMXRA5-g5F1Q3q1rxoOPwQ_TKSIu-Fv8Ht3QguU6DNwY"/>
+</div>
+<div class="min-w-0">
+<h3 class="font-title-md text-on-surface truncate">Valentina Gómez Restrepo</h3>
+<p class="font-label-md text-outline">C.C. 1.052.321.456</p>
+</div>
+</div>
+<span class="status-badge px-2.5 py-1 rounded-full bg-surface-container-highest text-secondary font-label-md flex items-center gap-1 flex-shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>En Pausa
+        </span>
+</div>
+<div class="flex flex-col gap-space-xs bg-surface/40 p-3 rounded-lg">
+<div class="flex items-center justify-between text-body-md">
+<span class="text-on-surface-variant flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">school</span>Ficha</span>
+<span class="font-medium text-on-surface">Ficha 2873408</span>
+</div>
+<div class="flex items-center justify-between text-body-md">
+<span class="text-on-surface-variant flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">mail</span></span>
+<span class="font-medium text-on-surface truncate max-w-[180px]">marincon456@sena.edu.co</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-surface-variant/40 mt-1">
+<div class="flex items-center gap-1">
+<span class="text-secondary font-label-md">Promedio: 3.9</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="star-btn w-9 h-9 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-yellow-400 flex items-center justify-center transition-colors" title="Destacar">
+<span class="material-symbols-outlined text-[18px]">star</span>
+</button>
+<button class="toggle-status-btn px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-label-md hover:bg-surface-bright transition-colors flex items-center gap-1" title="Cambiar Estado">
+<span class="material-symbols-outlined text-[16px]">swap_horiz</span> Estado
+</button>
+<button class="w-9 h-9 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="delete-btn w-9 h-9 rounded-lg bg-error-container/40 text-on-error-container flex items-center justify-center hover:opacity-90 transition-opacity" title="Eliminar">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Apprentice Card 3 -->
+<div class="apprentice-card flex flex-col p-space-md rounded-xl bg-surface-container transition-all hover:bg-surface-container-high shadow-sm gap-space-md" data-doc="1.112.890.123" data-ficha="2873409" data-name="Valentina Gómez Restrepo" data-status="activo">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="relative w-12 h-12 rounded-full bg-surface-container-highest overflow-hidden flex-shrink-0 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Portrait of a young Latina female vocational programming student with glasses and warm smile, friendly professional look, dark background with subtle blue tech glow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3Ju3_O6qw2G0iqPsXxyFwdgN11uszRbL69QxGa0oqTfi-PCJsU821am1Eh-CG01Z1CatHGIyJpMBIHPWIe5Uaec0aP1Au6t9zBmOF_OVCfi0GuYqzb3XJiAWvW0d1dPbsWevWpSlwuvXH10qK_k971TqRMwvYazs7_TsskJbuZtt3biCCdRX8D4mGkj7ZKFZeZGxixsKKtmoDYtvgo4xWhV5Wzpu9a--nnIvvl4A"/>
+</div>
+<div class="min-w-0">
+<h3 class="font-title-md text-on-surface truncate">Valentina Gómez Restrepo</h3>
+<p class="font-label-md text-outline">C.C. 1.112.890.123</p>
+</div>
+</div>
+<span class="status-badge px-2.5 py-1 rounded-full bg-tertiary-container text-on-tertiary-container font-label-md flex items-center gap-1 flex-shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>Activo
+        </span>
+</div>
+<div class="flex flex-col gap-space-xs bg-surface/40 p-3 rounded-lg">
+<div class="flex items-center justify-between text-body-md">
+<span class="text-on-surface-variant flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">school</span>Ficha</span>
+<span class="font-medium text-on-surface">Ficha 2873409</span>
+</div>
+<div class="flex items-center justify-between text-body-md">
+<span class="text-on-surface-variant flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">mail</span></span>
+<span class="font-medium text-on-surface truncate max-w-[180px]">sdmorales123@sena.edu.co</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-surface-variant/40 mt-1">
+<div class="flex items-center gap-1">
+<span class="text-secondary font-label-md">Promedio: 4.9</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="star-btn w-9 h-9 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-yellow-400 flex items-center justify-center transition-colors" title="Destacar">
+<span class="material-symbols-outlined text-[18px]">star</span>
+</button>
+<button class="toggle-status-btn px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-label-md hover:bg-surface-bright transition-colors flex items-center gap-1" title="Cambiar Estado">
+<span class="material-symbols-outlined text-[16px]">swap_horiz</span> Estado
+</button>
+<button class="w-9 h-9 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="delete-btn w-9 h-9 rounded-lg bg-error-container/40 text-on-error-container flex items-center justify-center hover:opacity-90 transition-opacity" title="Eliminar">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Action Button for creating new apprentice -->
+<div class="fixed right-6 bottom-24 z-40">
+<button class="w-14 h-14 rounded-2xl bg-primary text-on-primary shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all" onclick="document.getElementById('new-apprentice-modal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+</div>
+<!-- Modal Preview / Dialog -->
+<div class="hidden fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4" id="new-apprentice-modal">
+<div class="w-full sm:max-w-md bg-surface-container-high rounded-t-2xl sm:rounded-2xl p-space-lg flex flex-col gap-space-md shadow-2xl animate-in fade-in slide-in-from-bottom duration-200">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined">person_add</span>
+</div>
+<div>
+<h2 class="font-title-lg text-on-surface">Nuevo Aprendiz</h2>
+<p class="font-label-md text-outline">Registro en ADSO4089</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center hover:text-on-surface" onclick="document.getElementById('new-apprentice-modal').classList.add('hidden')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-space-md pt-2">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-on-surface-variant">Nombre Completo</label>
+<input class="w-full h-12 px-4 rounded-xl bg-surface text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary font-body-md" placeholder="Ej. Carlos Andrés Pérez" type="text"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-on-surface-variant">Número de Documento</label>
+<input class="w-full h-12 px-4 rounded-xl bg-surface text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary font-body-md" placeholder="Ej. 1.023.456.789" type="text"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-on-surface-variant">Número de Ficha</label>
+<select class="w-full h-12 px-4 rounded-xl bg-surface text-on-surface focus:outline-none focus:ring-2 focus:ring-primary font-body-md">
+<option>Ficha 2873408 - ADSO Diurno</option>
+<option>Ficha 2873409 - ADSO Nocturno</option>
+</select>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-on-surface-variant">Correo Institucional</label>
+<input class="w-full h-12 px-4 rounded-xl bg-surface text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary font-body-md" placeholder="correo@sena.edu.co" type="email"/>
+</div>
+<div class="flex items-center gap-space-md pt-2">
+<button class="flex-1 h-12 rounded-xl bg-surface-container text-on-surface font-label-lg hover:bg-surface-container-high transition-colors" onclick="document.getElementById('new-apprentice-modal').classList.add('hidden')">
+            Cancelar
+          </button>
+<button class="flex-1 h-12 rounded-xl bg-primary text-on-primary font-label-lg hover:opacity-90 transition-opacity shadow-md" onclick="document.getElementById('new-apprentice-modal').classList.add('hidden')">
+            Guardar Registro
+          </button>
+</div>
+</div>
+</div>
+</div>
+</div></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface-container/90 backdrop-blur-xl" data-active-classes="bg-primary-container text-on-primary-container font-semibold"><div class="flex justify-around items-center h-20 px-space-sm"><div class="flex justify-around items-center h-20 px-1"><a class="flex flex-col items-center justify-center gap-0.5 w-20 h-16 text-on-surface-variant hover:text-on-surface transition-all rounded-xl" data-path="dashboard" href="#"><span class="material-symbols-outlined">dashboard</span><span class="font-label-md text-[11px] truncate">Dashboard</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-0.5 w-20 h-16 transition-all rounded-xl bg-primary-container text-on-primary-container font-semibold" data-path="aprendices" href="#"><span class="material-symbols-outlined">group</span><span class="font-label-md text-[11px] truncate">Aprendices</span></a><a class="flex flex-col items-center justify-center gap-0.5 w-20 h-16 text-on-surface-variant hover:text-on-surface transition-all rounded-xl" data-path="cursos" href="#"><span class="material-symbols-outlined">school</span><span class="font-label-md text-[11px] truncate">Cursos</span></a><a class="flex flex-col items-center justify-center gap-0.5 w-20 h-16 text-on-surface-variant hover:text-on-surface transition-all rounded-xl" data-path="configuracion" href="#"><span class="material-symbols-outlined">settings</span><span class="font-label-md text-[11px] truncate">Config</span></a></div></div></nav>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const statusButtons = document.querySelectorAll('.filter-btn');
+    const fichaButtons = document.querySelectorAll('.ficha-btn');
+    const cards = document.querySelectorAll('.apprentice-card');
+    const searchInput = document.getElementById('search-input');
+    const totalCountEl = document.getElementById('total-count');
+
+    let currentStatus = 'all';
+    let currentFicha = 'all';
+    let searchQuery = '';
+
+    function filterCards() {
+      let visibleCount = 0;
+      cards.forEach(card => {
+        const status = card.getAttribute('data-status');
+        const ficha = card.getAttribute('data-ficha');
+        const name = card.getAttribute('data-name').toLowerCase();
+        const doc = card.getAttribute('data-doc').toLowerCase();
+
+        const matchesStatus = currentStatus === 'all' || status === currentStatus;
+        const matchesFicha = currentFicha === 'all' || ficha === currentFicha;
+        const matchesSearch = name.includes(searchQuery) || doc.includes(searchQuery);
+
+        if (matchesStatus && matchesFicha && matchesSearch) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      totalCountEl.textContent = `Total: ${visibleCount}`;
+    }
+
+    statusButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        statusButtons.forEach(b => {
+          b.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+          b.classList.add('bg-surface-container', 'text-on-surface-variant');
+        });
+        btn.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+        btn.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        currentStatus = btn.getAttribute('data-status');
+        filterCards();
+      });
+    });
+
+    fichaButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        fichaButtons.forEach(b => {
+          b.classList.remove('bg-surface-container-high', 'text-on-surface', 'border', 'border-primary/40');
+          b.classList.add('bg-surface-container', 'text-on-surface-variant');
+        });
+        btn.classList.add('bg-surface-container-high', 'text-on-surface', 'border', 'border-primary/40');
+        btn.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        currentFicha = btn.getAttribute('data-ficha');
+        filterCards();
+      });
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value.toLowerCase();
+      filterCards();
+    });
+
+    // Interactive actions for cards
+    cards.forEach(card => {
+      const starBtn = card.querySelector('.star-btn');
+      const toggleStatusBtn = card.querySelector('.toggle-status-btn');
+      const deleteBtn = card.querySelector('.delete-btn');
+      const statusBadge = card.querySelector('.status-badge');
+
+      starBtn.addEventListener('click', () => {
+        const icon = starBtn.querySelector('.material-symbols-outlined');
+        if (starBtn.classList.contains('text-yellow-400')) {
+          starBtn.classList.remove('text-yellow-400', 'bg-yellow-400/10');
+        } else {
+          starBtn.classList.add('text-yellow-400', 'bg-yellow-400/10');
+        }
+      });
+
+      toggleStatusBtn.addEventListener('click', () => {
+        const current = card.getAttribute('data-status');
+        if (current === 'activo') {
+          card.setAttribute('data-status', 'pausa');
+          statusBadge.className = 'status-badge px-2.5 py-1 rounded-full bg-surface-container-highest text-secondary font-label-md flex items-center gap-1 flex-shrink-0';
+          statusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>En Pausa';
+        } else {
+          card.setAttribute('data-status', 'activo');
+          statusBadge.className = 'status-badge px-2.5 py-1 rounded-full bg-tertiary-container text-on-tertiary-container font-label-md flex items-center gap-1 flex-shrink-0';
+          statusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>Activo';
+        }
+        filterCards();
+      });
+
+      deleteBtn.addEventListener('click', () => {
+        if (confirm('¿Estás seguro de eliminar este aprendiz?')) {
+          card.remove();
+          filterCards();
+        }
+      });
+    });
+  });
+</script>
+</body></html>
