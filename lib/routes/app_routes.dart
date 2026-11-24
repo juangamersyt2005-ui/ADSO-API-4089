@@ -8,6 +8,7 @@ import '../presentation/screens/instructores_screen.dart';
 import '../presentation/screens/matriculas_screen.dart';
 import '../presentation/screens/notas_screen.dart';
 import '../presentation/screens/personas_screen.dart';
+import '../presentation/screens/asistencia_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -20,6 +21,7 @@ class AppRoutes {
   static const String matriculas = '/matriculas';
   static const String evaluaciones = '/evaluaciones';
   static const String notas = '/notas';
+  static const String asistencias = '/asistencias';
 
   static final Map<String, WidgetBuilder> _routes = {
     aprendices: (_) => const AprendicesScreen(),
@@ -30,6 +32,7 @@ class AppRoutes {
     matriculas: (_) => const MatriculasScreen(),
     evaluaciones: (_) => const EvaluacionesScreen(),
     notas: (_) => const NotasScreen(),
+    asistencias: (_) => const AsistenciaScreen(),
   };
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {

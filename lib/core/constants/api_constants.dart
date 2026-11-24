@@ -1,4 +1,3 @@
-
 class ApiConstants {
   static const String baseUrl =
       'https://adso3294089.onrender.com';
@@ -11,4 +10,5 @@ class ApiConstants {
   static const String matriculas = '/matriculas/';
   static const String evaluaciones = '/evaluaciones/';
   static const String notas = '/materia-evalua/';
+  static const String asistenciasBatch = '/asistencias/batch';
 }

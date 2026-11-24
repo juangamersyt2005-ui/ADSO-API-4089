@@ -72,6 +72,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
       route: AppRoutes.notas,
       loadCount: () async => (await NotaService().obtenerNotas()).count,
     ),
+    _ModuleDefinition(
+      title: 'Asistencias',
+      icon: Icons.event_available_outlined,
+      route: AppRoutes.asistencias,
+      loadCount: () async => (await AprendizService().obtenerAprendices()).count,
+    ),
   ];
 
   Map<String, _ModuleStatus> _statuses = const {};
