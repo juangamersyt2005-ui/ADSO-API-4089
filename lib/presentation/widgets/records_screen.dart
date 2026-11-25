@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/services/api_service.dart';
+import '../../core/theme/app_theme.dart';
+import 'app_chrome.dart';
 import 'empty_state.dart';
 import 'error_state.dart';
 import 'record_editor.dart';
@@ -22,6 +24,12 @@ class RecordsScreen<T> extends StatefulWidget {
     required this.titleFor,
     required this.subtitleFor,
     this.detailsFor,
+    this.headerSubtitle,
+    this.searchHint,
+    this.navigationIndex = 3,
+    this.filters = const [],
+    this.extraActionsFor,
+    this.openEditorOnStart = false,
     this.editorConfig,
     this.createRecord,
     this.updateRecord,
@@ -37,6 +45,13 @@ class RecordsScreen<T> extends StatefulWidget {
   final String Function(T record) titleFor;
   final String Function(T record) subtitleFor;
   final List<RecordDetailField> Function(T record)? detailsFor;
+  final String? headerSubtitle;
+  final String? searchHint;
+  final int navigationIndex;
+  final List<RecordFilter<T>> filters;
+  final List<RecordCardAction> Function(BuildContext context, T record)?
+  extraActionsFor;
+  final bool openEditorOnStart;
   final FutureOr<RecordEditorConfig> Function(T? record)? editorConfig;
   final Future<void> Function(Map<String, Object?> values)? createRecord;
   final Future<void> Function(T record, Map<String, Object?> values)?
@@ -53,11 +68,17 @@ class _RecordsScreenState<T> extends State<RecordsScreen<T>> {
   late Future<ApiCollection<T>> _recordsFuture;
   final TextEditingController _searchController = TextEditingController();
   bool _openingEditor = false;
+  int _selectedFilter = 0;
 
   @override
   void initState() {
     super.initState();
     _recordsFuture = widget.loadRecords();
+    if (widget.openEditorOnStart) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_openEditor());
+      });
+    }
   }
 
   @override
@@ -128,7 +149,7 @@ class _RecordsScreenState<T> extends State<RecordsScreen<T>> {
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudo abrir el formulario: $error')),
+        SnackBar(content: Text('No se pudo guardar el registro: $error')),
       );
     } finally {
       if (mounted && _openingEditor) setState(() => _openingEditor = false);
@@ -203,11 +224,11 @@ class _RecordsScreenState<T> extends State<RecordsScreen<T>> {
               Text(
                 widget.subtitleFor(record),
                 style: Theme.of(sheetContext).textTheme.bodyMedium
-                    ?.copyWith(color: Colors.black54),
+                    ?.copyWith(color: AppTheme.muted),
               ),
               const SizedBox(height: 12),
               for (final detail in details)
-                if (detail.value?.isNotEmpty == true)
+                if (detail.value?.trim().isNotEmpty == true)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(detail.label),
@@ -222,182 +243,404 @@ class _RecordsScreenState<T> extends State<RecordsScreen<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: [
-          if (widget.editorConfig != null)
-            IconButton(
-              tooltip: 'Agregar registro',
-              onPressed: _openingEditor ? null : () => unawaited(_openEditor()),
-              icon: _openingEditor
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.add),
-            ),
-          IconButton(
-            tooltip: 'Actualizar',
-            onPressed: () => unawaited(_refresh()),
-            icon: const Icon(Icons.refresh),
+    return FutureBuilder<ApiCollection<T>>(
+      future: _recordsFuture,
+      builder: (context, snapshot) {
+        final connectionStatus = snapshot.hasError
+            ? ApiConnectionStatus.offline
+            : snapshot.connectionState == ConnectionState.waiting
+            ? ApiConnectionStatus.connecting
+            : snapshot.hasData
+            ? ApiConnectionStatus.connected
+            : ApiConnectionStatus.unknown;
+        final records = snapshot.data?.items ?? <T>[];
+        final query = _searchController.text.trim().toLowerCase();
+        final filterIndex = widget.filters.isEmpty
+            ? 0
+            : _selectedFilter.clamp(0, widget.filters.length - 1).toInt();
+        final filtered = records
+            .where((record) {
+              if (widget.filters.isNotEmpty &&
+                  filterIndex != 0 &&
+                  !widget.filters[filterIndex].matches(record)) {
+                return false;
+              }
+              if (query.isEmpty) return true;
+              final details = widget.detailsFor?.call(record) ?? const [];
+              final searchable = [
+                widget.titleFor(record),
+                widget.subtitleFor(record),
+                ...details.map((detail) => detail.value ?? ''),
+              ].join(' ').toLowerCase();
+              return searchable.contains(query);
+            })
+            .toList(growable: false);
+
+        return Scaffold(
+          appBar: BrandHeader(
+            status: connectionStatus,
+            onProfileTap: () =>
+                Navigator.of(context).pushNamed('/configuracion'),
           ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (_) => setState(() {}),
-              decoration: InputDecoration(
-                hintText: 'Buscar en ${widget.title.toLowerCase()}',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchController.text.isEmpty
-                    ? null
-                    : IconButton(
-                        tooltip: 'Limpiar búsqueda',
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() {});
-                        },
-                        icon: const Icon(Icons.close),
+          bottomNavigationBar: AppBottomNavigationBar(
+            selectedIndex: widget.navigationIndex,
+          ),
+          floatingActionButton: widget.editorConfig == null
+              ? null
+              : FloatingActionButton(
+                  tooltip: 'Agregar ${widget.title.toLowerCase()}',
+                  onPressed: _openingEditor
+                      ? null
+                      : () => unawaited(_openEditor()),
+                  child: _openingEditor
+                      ? const SizedBox.square(
+                          dimension: 23,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.add),
+                ),
+          body: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.title,
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(
+                                  color: AppTheme.text,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                          ),
+                          if (widget.headerSubtitle != null) ...[
+                            const SizedBox(height: 3),
+                            Text(
+                              widget.headerSubtitle!,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: AppTheme.muted),
+                            ),
+                          ],
+                        ],
                       ),
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide.none,
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 11,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.cardHigh,
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                      child: Text(
+                        'Total: ${snapshot.data?.count ?? '—'}',
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: AppTheme.primarySoft,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ),
-          Expanded(
-            child: FutureBuilder<ApiCollection<T>>(
-              future: _recordsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return ErrorState(
-                    message: snapshot.error.toString(),
-                    onRetry: () => unawaited(_refresh()),
-                  );
-                }
-
-                final records = snapshot.data?.items ?? <T>[];
-                if (records.isEmpty) {
-                  return RefreshIndicator(
-                    onRefresh: _refresh,
-                    child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: const [
-                        SizedBox(
-                          height: 360,
-                          child: EmptyState(
-                            title: 'No hay registros',
-                            message: 'Este módulo no tiene datos para mostrar.',
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (_) => setState(() {}),
+                  decoration: InputDecoration(
+                    hintText:
+                        widget.searchHint ??
+                        'Buscar en ${widget.title.toLowerCase()}',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchController.text.isEmpty
+                        ? null
+                        : IconButton(
+                            tooltip: 'Limpiar búsqueda',
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() {});
+                            },
+                            icon: const Icon(Icons.close),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                final query = _searchController.text.trim().toLowerCase();
-                final filtered = records
-                    .where((record) {
-                      if (query.isEmpty) return true;
-                      final text =
-                          '${widget.titleFor(record)} ${widget.subtitleFor(record)}'
-                              .toLowerCase();
-                      return text.contains(query);
-                    })
-                    .toList(growable: false);
-
-                if (filtered.isEmpty) {
-                  return RefreshIndicator(
-                    onRefresh: _refresh,
-                    child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: const [
-                        SizedBox(
-                          height: 360,
-                          child: EmptyState(
-                            icon: Icons.search_off,
-                            title: 'Sin coincidencias',
-                            message: 'Prueba con otro nombre o término.',
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return RefreshIndicator(
-                  onRefresh: _refresh,
+                  ),
+                ),
+              ),
+              if (widget.filters.isNotEmpty && records.isNotEmpty)
+                SizedBox(
+                  height: 48,
                   child: ListView.separated(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                    itemCount: filtered.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: widget.filters.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 8),
                     itemBuilder: (context, index) {
-                      final record = filtered[index];
-                      final deleteEnabled =
-                          widget.canDelete?.call(record) ?? true;
-                      final editEnabled = widget.canEdit?.call(record) ?? true;
-                      final actions = <Widget>[
-                        if (widget.updateRecord != null)
-                          IconButton(
-                            tooltip: editEnabled
-                                ? 'Editar registro'
-                                : 'No se puede editar: falta UUID',
-                            onPressed: editEnabled
-                                ? () => unawaited(_openEditor(record))
-                                : null,
-                            icon: const Icon(Icons.edit_outlined),
-                          ),
-                        if (widget.deleteRecord != null)
-                          IconButton(
-                            tooltip: deleteEnabled
-                                ? 'Eliminar registro'
-                                : 'No se puede eliminar: falta UUID',
-                            onPressed: deleteEnabled
-                                ? () => unawaited(_confirmDelete(record))
-                                : null,
-                            icon: const Icon(Icons.delete_outline),
-                          ),
-                      ];
-                      return Card(
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Theme.of(context)
-                                .colorScheme
-                                .primaryContainer,
-                            child: Icon(widget.icon),
-                          ),
-                          onTap: widget.detailsFor == null
-                              ? null
-                              : () => unawaited(_showDetails(record)),
-                          title: Text(widget.titleFor(record)),
-                          subtitle: Text(widget.subtitleFor(record)),
-                          trailing: actions.isEmpty
-                              ? null
-                              : Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: actions,
-                                ),
-                        ),
+                      final filter = widget.filters[index];
+                      final count = index == 0
+                          ? records.length
+                          : records.where(filter.matches).length;
+                      return ChoiceChip(
+                        selected: filterIndex == index,
+                        label: Text('${filter.label} ($count)'),
+                        onSelected: (_) =>
+                            setState(() => _selectedFilter = index),
                       );
                     },
                   ),
-                );
-              },
-            ),
+                ),
+              Expanded(
+                child: _buildRecordsBody(context, snapshot, records, filtered),
+              ),
+            ],
           ),
-        ],
+        );
+      },
+    );
+  }
+
+  Widget _buildRecordsBody(
+    BuildContext context,
+    AsyncSnapshot<ApiCollection<T>> snapshot,
+    List<T> records,
+    List<T> filtered,
+  ) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (snapshot.hasError) {
+      return ErrorState(
+        message: snapshot.error.toString(),
+        onRetry: () => unawaited(_refresh()),
+      );
+    }
+    if (records.isEmpty || filtered.isEmpty) {
+      final noRecords = records.isEmpty;
+      return RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: 360,
+              child: EmptyState(
+                icon: noRecords ? Icons.inbox_outlined : Icons.search_off,
+                title: noRecords ? 'No hay registros' : 'Sin coincidencias',
+                message: noRecords
+                    ? 'Este módulo todavía no tiene datos para mostrar.'
+                    : 'Prueba otra búsqueda o selecciona un filtro diferente.',
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 116),
+        itemCount: filtered.length,
+        itemBuilder: (context, index) =>
+            _buildRecordCard(context, filtered[index]),
+      ),
+    );
+  }
+
+  Widget _buildRecordCard(BuildContext context, T record) {
+    final details = (widget.detailsFor?.call(record) ?? const [])
+        .where((detail) => detail.value?.trim().isNotEmpty == true)
+        .toList(growable: false);
+    final extraActions =
+        widget.extraActionsFor?.call(context, record) ??
+        const <RecordCardAction>[];
+    final canEdit = widget.canEdit?.call(record) ?? true;
+    final canDelete = widget.canDelete?.call(record) ?? true;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: widget.detailsFor == null
+            ? null
+            : () => unawaited(_showDetails(record)),
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: AppTheme.primary.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(13),
+                    ),
+                    child: Icon(widget.icon, color: AppTheme.primarySoft),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.titleFor(record),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: AppTheme.text,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          widget.subtitleFor(record),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppTheme.muted),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              if (details.isNotEmpty) ...[
+                const SizedBox(height: 13),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 9,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surface,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Column(
+                    children: [
+                      for (final detail in details.take(3))
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 3),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.data_object_outlined,
+                                size: 17,
+                                color: AppTheme.muted,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                detail.label,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(color: AppTheme.muted),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  detail.value!,
+                                  textAlign: TextAlign.end,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: AppTheme.text,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+              if (extraActions.isNotEmpty) ...[
+                const SizedBox(height: 13),
+                Row(
+                  children: [
+                    for (
+                      var index = 0;
+                      index < extraActions.length;
+                      index++
+                    ) ...[
+                      if (index > 0) const SizedBox(width: 8),
+                      Expanded(
+                        child: extraActions[index].isPrimary
+                            ? FilledButton.tonalIcon(
+                                onPressed: extraActions[index].onPressed,
+                                icon: Icon(extraActions[index].icon, size: 18),
+                                label: Text(
+                                  extraActions[index].label,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )
+                            : OutlinedButton.icon(
+                                onPressed: extraActions[index].onPressed,
+                                icon: Icon(extraActions[index].icon, size: 18),
+                                label: Text(
+                                  extraActions[index].label,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+              if (widget.updateRecord != null ||
+                  widget.deleteRecord != null) ...[
+                const SizedBox(height: 8),
+                const Divider(height: 1),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        details.isEmpty ? 'Acciones del registro' : 'Gestionar',
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(color: AppTheme.primarySoft),
+                      ),
+                    ),
+                    if (widget.updateRecord != null)
+                      IconButton(
+                        tooltip: canEdit
+                            ? 'Editar registro'
+                            : 'No se puede editar: falta UUID',
+                        onPressed: canEdit
+                            ? () => unawaited(_openEditor(record))
+                            : null,
+                        icon: const Icon(Icons.edit_outlined),
+                      ),
+                    if (widget.deleteRecord != null)
+                      IconButton(
+                        tooltip: canDelete
+                            ? 'Eliminar registro'
+                            : 'No se puede eliminar: falta UUID',
+                        onPressed: canDelete
+                            ? () => unawaited(_confirmDelete(record))
+                            : null,
+                        icon: const Icon(Icons.delete_outline),
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }

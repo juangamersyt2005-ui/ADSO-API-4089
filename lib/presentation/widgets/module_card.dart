@@ -46,9 +46,9 @@ class ModuleCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppTheme.dark,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  color: AppTheme.text,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 7),
               Row(
@@ -62,9 +62,9 @@ class ModuleCard extends StatelessWidget {
                     Text(
                       hasError ? '—' : '${count ?? 0}',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: hasError ? Colors.grey : AppTheme.primary,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        color: hasError ? Colors.grey : AppTheme.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   const SizedBox(width: 6),
                   Expanded(
@@ -72,12 +72,15 @@ class ModuleCard extends StatelessWidget {
                       hasError ? 'No disponible' : 'registros',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.black54,
-                          ),
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(color: AppTheme.muted),
                     ),
                   ),
-                  const Icon(Icons.arrow_forward, size: 17, color: Colors.black45),
+                  const Icon(
+                    Icons.arrow_forward,
+                    size: 17,
+                    color: Colors.black45,
+                  ),
                 ],
               ),
             ],

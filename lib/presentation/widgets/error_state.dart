@@ -1,11 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 class ErrorState extends StatelessWidget {
-  const ErrorState({
-    required this.message,
-    required this.onRetry,
-    super.key,
-  });
+  const ErrorState({required this.message, required this.onRetry, super.key});
 
   final String message;
   final VoidCallback onRetry;
@@ -18,7 +14,11 @@ class ErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.cloud_off_outlined, size: 46, color: Colors.black45),
+            Icon(
+              Icons.cloud_off_outlined,
+              size: 46,
+              color: Theme.of(context).colorScheme.error,
+            ),
             const SizedBox(height: 12),
             Text(
               'No se pudieron cargar los datos',
@@ -30,8 +30,8 @@ class ErrorState extends StatelessWidget {
               message,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.black54,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 16),
             FilledButton.icon(

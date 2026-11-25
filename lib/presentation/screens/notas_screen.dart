@@ -16,7 +16,9 @@ import 'module_editor_configs.dart';
 import 'related_collections.dart';
 
 class NotasScreen extends StatefulWidget {
-  const NotasScreen({super.key});
+  const NotasScreen({this.openEditorOnStart = false, super.key});
+
+  final bool openEditorOnStart;
 
   @override
   State<NotasScreen> createState() => _NotasScreenState();
@@ -100,6 +102,7 @@ class _NotasScreenState extends State<NotasScreen> {
     return RecordsScreen<Nota>(
       title: 'Notas',
       icon: Icons.grade_outlined,
+      openEditorOnStart: widget.openEditorOnStart,
       loadRecords: _cargarNotas,
       titleFor: _titulo,
       subtitleFor: _subtitulo,

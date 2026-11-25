@@ -1,4 +1,3 @@
-
 import 'package:material_ui/material_ui.dart';
 
 import 'core/theme/app_theme.dart';
@@ -17,7 +16,7 @@ class ADSO4089App extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ADSO4089',
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.darkTheme,
       onGenerateRoute: AppRoutes.onGenerateRoute,
       home: const DashboardScreen(),
     );
