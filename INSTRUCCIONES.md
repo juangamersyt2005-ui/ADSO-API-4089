@@ -85,7 +85,7 @@ El dispositivo debe tener acceso a Internet y la API debe estar disponible. La p
 
 Si un endpoint falla, la interfaz informa el error y permite reintentar. No muestra cantidades ficticias. Para respuestas que entregan un arreglo directo, el dashboard cuenta los registros recibidos; ese valor no implica que la API haya aplicado paginación.
 
-Los formularios usan los contratos de `swagger.json` y las validaciones de los controladores del backend local. Validan campos obligatorios y rangos numéricos; los mensajes HTTP muestran el detalle del servidor cuando está disponible. Aún no se han enviado escrituras reales contra Render.
+Los formularios usan los contratos de `swagger.json` y las validaciones de los controladores de la API. Validan campos obligatorios y rangos numéricos; los mensajes HTTP muestran el detalle del servidor cuando está disponible. La URL de producción es `https://adso3294089.onrender.com`.
 
 ## 6. Pruebas y compilación
 
@@ -112,3 +112,29 @@ El archivo se genera en `build/app/outputs/flutter-apk/app-release.apk`.
 - **Falla una consulta:** confirma que Android tenga Internet y vuelve a intentar desde el módulo. La pantalla muestra el error de conexión o de respuesta HTTP.
 - **Faltan paquetes:** ejecuta `flutter pub get` desde la carpeta del proyecto Flutter.
 - **La compilación conserva archivos generados antiguos:** ejecuta `flutter clean` y después `flutter pub get` antes de volver a compilar.
+
+## 8. Publicar y usar Flutter Web desde Render
+
+El repositorio contiene `render.yaml`, `Dockerfile` y `nginx.conf` para compilar
+Flutter Web y servirlo desde un Web Service de Render.
+
+1. En Render, selecciona **New > Blueprint** y conecta el repositorio Flutter
+   `juangamersyt2005-ui/ADSO-API-4089`, rama `main`.
+2. Render lee `render.yaml`, construye el frontend y lo publica en:
+   `https://adso4089-mobile-web-juangamers.onrender.com`.
+3. La aplicación web consulta la API en
+   `https://adso3294089.onrender.com`. Abre esa URL en el navegador para
+   comprobar que muestra el mensaje de la API.
+4. El servicio de la API debe conservar en **Environment** sus variables
+   `MYSQL_HOST`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DB` y `MYSQL_PORT`, con
+   los datos de la base de datos cloud. No subas esas credenciales a GitHub.
+5. El origen del frontend ya está permitido por la configuración CORS de la
+   API. Si cambias el dominio del frontend, agrega su origen exacto a
+   `CORS_ORIGINS` en **Environment** del servicio de API y vuelve a desplegar.
+6. Abre la URL del frontend y consulta los módulos. La primera llamada puede
+   tardar si el servicio de API estaba inactivo; después, prueba una operación
+   de escritura con datos de prueba.
+
+La compilación del frontend usa Flutter 3.50.0 dentro del Dockerfile. Para
+Android, continúa usando `flutter run` desde el proyecto; Android consulta la
+misma API HTTPS y no necesita configuración CORS.

@@ -1,7 +1,9 @@
 
 class ApiConstants {
-  static const String baseUrl =
-      'https://adso3294089.onrender.com';
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'https://adso3294089.onrender.com',
+  );
 
   static const String aprendices = '/aprendices/';
   static const String personas = '/personas/';

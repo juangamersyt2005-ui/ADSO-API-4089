@@ -1,0 +1,14 @@
+.git
+.idea
+.dart_tool
+.pub
+.pub-cache
+build
+coverage
+test
+android
+ios
+linux
+macos
+windows
+*.iml

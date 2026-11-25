@@ -15,6 +15,25 @@ Aplicación móvil Flutter con Material 3 para consultar y gestionar los módulo
 
 Incluye dashboard con cantidades consultadas a la API, búsqueda, detalles, actualización de listas y formularios para crear, editar y eliminar registros. Las relaciones se seleccionan desde los datos disponibles en la API.
 
+## Publicar la aplicación web en Render
+
+El repositorio incluye `render.yaml` y un `Dockerfile` que compila Flutter Web
+y sirve los archivos de producción. En Render, crea un **Blueprint** conectado
+a este repositorio y a la rama `main`; Render publicará el servicio
+`adso4089-mobile-web-juangamers`.
+
+La aplicación consulta por defecto `https://adso3294089.onrender.com`. La API
+permite el origen web indicado en su configuración. Si cambias el dominio del
+frontend, configura ese origen exacto en `CORS_ORIGINS` dentro del Web Service
+de la API. Las credenciales de MySQL se configuran únicamente en el servicio
+de la API; el frontend no debe contener secretos.
+
+Para compilar manualmente con otra URL de API, usa:
+
+```powershell
+flutter build web --release --dart-define=API_BASE_URL=https://tu-api.onrender.com
+```
+
 ## Empezar desde cero
 
 Consulta [INSTRUCCIONES.md](INSTRUCCIONES.md) para instalar Flutter y Android Studio, preparar el dispositivo, ejecutar la aplicación, usar los formularios y correr las pruebas.
